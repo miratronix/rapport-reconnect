@@ -33,7 +33,7 @@
     "uglify-js": "^2.7.5"
   },
   "peerDependencies": {
-    "rapport": ">=0.0.9"
+    "rapport": ">=0.0.10"
   },
   "repository": {
     "type": "git",
