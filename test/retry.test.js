@@ -71,7 +71,6 @@ describe('Retryer', () => {
 
         it('Calls the first parameter in attempt to retry an operation', () => {
             const retryer = constructRetryer({ interval: 100 });
-
             return new Promise((resolve, reject) => {
                 retryer.attempt(resolve, reject);
             });
@@ -79,7 +78,6 @@ describe('Retryer', () => {
 
         it('Calls the second parameter in attempt to abort an operation', () => {
             const retryer = constructRetryer({ interval: 100, maxAttempts: 1 });
-
             return new Promise((resolve, reject) => {
                 const tryAgain = () => {
                     retryer.attempt(reject, resolve);

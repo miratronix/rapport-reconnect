@@ -9,12 +9,11 @@ describe('Plugin', () => {
     let rapport;
 
     beforeEach(() => {
-        rapport = Rapport(util.mockWebSocketConstructor).use(plugin);
+        rapport = Rapport(util.mockNodeWebSocketConstructor).use(plugin);
     });
 
     it('Wraps a standard Node websocket', () => {
         const testSocket = rapport.constructWebsocket('test', {});
-
         testSocket.should.have.a.property('wsImplementation').that.is.a('function');
         testSocket.should.have.a.property('retryer').that.equals(null);
         testSocket.should.have.a.property('messageQueue').that.equals(null);
@@ -22,7 +21,6 @@ describe('Plugin', () => {
 
     it('Wraps a standard Browser websocket', () => {
         const testSocket = rapport.constructWebsocket('test', {});
-
         testSocket.should.have.a.property('wsImplementation').that.is.a('function');
         testSocket.should.have.a.property('retryer').that.equals(null);
         testSocket.should.have.a.property('messageQueue').that.equals(null);
@@ -30,7 +28,6 @@ describe('Plugin', () => {
 
     it('Adds a retryer if specified', () => {
         const testSocket = rapport.constructWebsocket('test', { reconnect: true });
-
         testSocket.should.have.a.property('wsImplementation').that.is.a('function');
         testSocket.should.have.a.property('retryer').that.is.a('object');
         testSocket.should.have.a.property('messageQueue').that.equals(null);
@@ -38,7 +35,6 @@ describe('Plugin', () => {
 
     it('Adds a retryer and message queue if specified', () => {
         const testSocket = rapport.constructWebsocket('test', { reconnect: { queueMessages: true } });
-
         testSocket.should.have.a.property('wsImplementation').that.is.a('function');
         testSocket.should.have.a.property('retryer').that.is.a('object');
         testSocket.should.have.a.property('messageQueue').that.is.a('object');

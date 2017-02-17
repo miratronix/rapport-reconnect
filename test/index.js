@@ -8,7 +8,7 @@ const TestUtil = {
 
     should,
 
-    mockWebSocketConstructor: function mockNodeSocketConstructor() {
+    mockNodeWebSocketConstructor: function mockNodeSocketConstructor() {
         return TestUtil.mockNodeWebsocket();
     },
 
@@ -51,10 +51,6 @@ const TestUtil = {
 
             on: (type, handler) => {
                 ws.handlers[type].push(handler);
-            },
-
-            removeAllListeners: (type) => {
-                ws.handlers[type] = [];
             }
         };
 
