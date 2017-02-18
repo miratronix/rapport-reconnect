@@ -55,6 +55,24 @@ describe('Retry Socket', () => {
         socket.handlers.should.have.a.property('message').that.equals(4);
     });
 
+    it('Can set up a message handler after being opened', () => {
+        const socket = constructSocket(util.mockNodeWebSocketConstructor);
+        socket.connect();
+        return new Promise((resolve) => {
+            socket.on('message', resolve);
+            socket.instance.fire('message');
+        });
+    });
+
+    it('Can set up a error handler after being opened', () => {
+        const socket = constructSocket(util.mockNodeWebSocketConstructor);
+        socket.connect();
+        return new Promise((resolve) => {
+            socket.on('error', resolve);
+            socket.instance.fire('error');
+        });
+    });
+
     it('Fires the open handler', () => {
         const socket = constructSocket(util.mockNodeWebSocketConstructor);
         return new Promise((resolve) => {
