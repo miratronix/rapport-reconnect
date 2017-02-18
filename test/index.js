@@ -12,7 +12,7 @@ const TestUtil = {
         return TestUtil.mockNodeWebsocket();
     },
 
-    mockBrowserConstructor: function mockBrowserSocketConstructor() {
+    mockBrowserWebsocketConstructor: function mockBrowserSocketConstructor() {
         return TestUtil.mockBrowserWebsocket();
     },
 

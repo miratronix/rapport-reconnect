@@ -55,7 +55,25 @@ describe('Retry Socket', () => {
         socket.handlers.should.have.a.property('message').that.equals(4);
     });
 
-    it('Fires the open handler', () => {
+    it('Can set up a message handler after being opened', () => {
+        const socket = constructSocket(util.mockNodeWebSocketConstructor);
+        socket.connect();
+        return new Promise((resolve) => {
+            socket.on('message', resolve);
+            socket.instance.fire('message');
+        });
+    });
+
+    it('Can set up a error handler after being opened', () => {
+        const socket = constructSocket(util.mockNodeWebSocketConstructor);
+        socket.connect();
+        return new Promise((resolve) => {
+            socket.on('error', resolve);
+            socket.instance.fire('error');
+        });
+    });
+
+    it('Fires the open handler for a node websocket', () => {
         const socket = constructSocket(util.mockNodeWebSocketConstructor);
         return new Promise((resolve) => {
             socket.successfullyConnected = resolve;
@@ -64,7 +82,7 @@ describe('Retry Socket', () => {
         });
     });
 
-    it('Fires the message handler', () => {
+    it('Fires the message handler for a node websocket', () => {
         const socket = constructSocket(util.mockNodeWebSocketConstructor);
         return new Promise((resolve) => {
             socket.on('message', resolve);
@@ -73,7 +91,7 @@ describe('Retry Socket', () => {
         });
     });
 
-    it('Fires the error handler', () => {
+    it('Fires the error handler for a node websocket', () => {
         const socket = constructSocket(util.mockNodeWebSocketConstructor);
         return new Promise((resolve) => {
             socket.on('error', resolve);
@@ -82,8 +100,47 @@ describe('Retry Socket', () => {
         });
     });
 
-    it('Fires the close handler', () => {
+    it('Fires the close handler for a node websocket', () => {
         const socket = constructSocket(util.mockNodeWebSocketConstructor);
+        return new Promise((resolve) => {
+            socket.reconnect = resolve;
+            socket.connect();
+            socket.instance.fire('close');
+        });
+    });
+
+    it('Fires the open handler for a browser websocket', () => {
+        const socket = constructSocket(util.mockBrowserWebsocketConstructor);
+        return new Promise((resolve) => {
+            socket.successfullyConnected = resolve;
+            socket.connect();
+            socket.instance.fire('open');
+        });
+    });
+
+    it('Fires the message handler for a browser websocket', () => {
+        const socket = constructSocket(util.mockBrowserWebsocketConstructor);
+        return new Promise((resolve) => {
+            socket.on('message', (msg) => {
+                msg.should.equal(42);
+                resolve();
+            });
+            socket.connect();
+            socket.instance.fire('message', { data: 42 });
+        });
+    });
+
+    it('Fires the error handler for a browser websocket', () => {
+        const socket = constructSocket(util.mockBrowserWebsocketConstructor);
+        return new Promise((resolve) => {
+            socket.on('error', resolve);
+            socket.connect();
+            socket.instance.fire('error');
+        });
+    });
+
+    it('Fires the close handler for a browser websocket', () => {
+        const socket = constructSocket(util.mockBrowserWebsocketConstructor);
         return new Promise((resolve) => {
             socket.reconnect = resolve;
             socket.connect();
@@ -271,24 +328,20 @@ describe('Retry Socket', () => {
 
         it('Attaches handlers to an event emitter websocket', () => {
             const socket = constructSocket(util.mockNodeWebSocketConstructor);
-            socket.on('message', 42);
-            socket.on('error', 142);
             socket.connect();
 
-            socket.instance.handlers.message[0].should.equal(42);
-            socket.instance.handlers.error[0].should.equal(142);
+            socket.instance.handlers.message[0].should.be.a('function');
+            socket.instance.handlers.error[0].should.be.a('function');
             socket.instance.handlers.open[0].should.equal(socket.successfullyConnected);
             socket.instance.handlers.close[0].should.equal(socket.reconnect);
         });
 
         it('Attaches handlers to an browser websocket', () => {
-            const socket = constructSocket(util.mockBrowserConstructor);
-            socket.on('message', 42);
-            socket.on('error', 142);
+            const socket = constructSocket(util.mockBrowserWebsocketConstructor);
             socket.connect();
 
-            socket.instance.onmessage.should.equal(42);
-            socket.instance.onerror.should.equal(142);
+            socket.instance.onmessage.should.be.a('function');
+            socket.instance.onerror.should.be.a('function');
             socket.instance.onopen.should.equal(socket.successfullyConnected);
             socket.instance.onclose.should.equal(socket.reconnect);
         });
