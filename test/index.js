@@ -51,7 +51,9 @@ const TestUtil = {
 
             on: (type, handler) => {
                 ws.handlers[type].push(handler);
-            }
+            },
+
+            removeAllListeners: () => {}
         };
 
         return ws;

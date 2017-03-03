@@ -60,7 +60,7 @@ describe('Retry Socket', () => {
         socket.connect();
         return new Promise((resolve) => {
             socket.on('message', resolve);
-            socket.instance.fire('message');
+            socket.instance.socket.fire('message');
         });
     });
 
@@ -69,7 +69,7 @@ describe('Retry Socket', () => {
         socket.connect();
         return new Promise((resolve) => {
             socket.on('error', resolve);
-            socket.instance.fire('error');
+            socket.instance.socket.fire('error');
         });
     });
 
@@ -78,7 +78,7 @@ describe('Retry Socket', () => {
         return new Promise((resolve) => {
             socket.successfullyConnected = resolve;
             socket.connect();
-            socket.instance.fire('open');
+            socket.instance.socket.fire('open');
         });
     });
 
@@ -87,7 +87,7 @@ describe('Retry Socket', () => {
         return new Promise((resolve) => {
             socket.on('message', resolve);
             socket.connect();
-            socket.instance.fire('message');
+            socket.instance.socket.fire('message');
         });
     });
 
@@ -96,7 +96,7 @@ describe('Retry Socket', () => {
         return new Promise((resolve) => {
             socket.on('error', resolve);
             socket.connect();
-            socket.instance.fire('error');
+            socket.instance.socket.fire('error');
         });
     });
 
@@ -105,7 +105,7 @@ describe('Retry Socket', () => {
         return new Promise((resolve) => {
             socket.reconnect = resolve;
             socket.connect();
-            socket.instance.fire('close');
+            socket.instance.socket.fire('close');
         });
     });
 
@@ -114,7 +114,7 @@ describe('Retry Socket', () => {
         return new Promise((resolve) => {
             socket.successfullyConnected = resolve;
             socket.connect();
-            socket.instance.fire('open');
+            socket.instance.socket.fire('open');
         });
     });
 
@@ -126,7 +126,7 @@ describe('Retry Socket', () => {
                 resolve();
             });
             socket.connect();
-            socket.instance.fire('message', { data: 42 });
+            socket.instance.socket.fire('message', { data: 42 });
         });
     });
 
@@ -135,7 +135,7 @@ describe('Retry Socket', () => {
         return new Promise((resolve) => {
             socket.on('error', resolve);
             socket.connect();
-            socket.instance.fire('error');
+            socket.instance.socket.fire('error');
         });
     });
 
@@ -144,7 +144,7 @@ describe('Retry Socket', () => {
         return new Promise((resolve) => {
             socket.reconnect = resolve;
             socket.connect();
-            socket.instance.fire('close');
+            socket.instance.socket.fire('close');
         });
     });
 
@@ -154,7 +154,7 @@ describe('Retry Socket', () => {
             socket.on('message', resolve);
             socket.connect();
             socket.connect();
-            socket.instance.fire('message');
+            socket.instance.socket.fire('message');
         });
     });
 
@@ -330,20 +330,20 @@ describe('Retry Socket', () => {
             const socket = constructSocket(util.mockNodeWebSocketConstructor);
             socket.connect();
 
-            socket.instance.handlers.message[0].should.be.a('function');
-            socket.instance.handlers.error[0].should.be.a('function');
-            socket.instance.handlers.open[0].should.equal(socket.successfullyConnected);
-            socket.instance.handlers.close[0].should.equal(socket.reconnect);
+            socket.instance.socket.handlers.message[0].should.be.a('function');
+            socket.instance.socket.handlers.error[0].should.be.a('function');
+            socket.instance.socket.handlers.open[0].should.equal(socket.successfullyConnected);
+            socket.instance.socket.handlers.close[0].should.equal(socket.reconnect);
         });
 
         it('Attaches handlers to an browser websocket', () => {
             const socket = constructSocket(util.mockBrowserWebsocketConstructor);
             socket.connect();
 
-            socket.instance.onmessage.should.be.a('function');
-            socket.instance.onerror.should.be.a('function');
-            socket.instance.onopen.should.equal(socket.successfullyConnected);
-            socket.instance.onclose.should.equal(socket.reconnect);
+            socket.instance.socket.onmessage.should.be.a('function');
+            socket.instance.socket.onerror.should.be.a('function');
+            socket.instance.socket.onopen.should.equal(socket.successfullyConnected);
+            socket.instance.socket.onclose.should.equal(socket.reconnect);
         });
 
         it('Returns the socket instance', () => {
@@ -384,9 +384,9 @@ describe('Retry Socket', () => {
             const socket = constructSocket(util.mockNodeWebSocketConstructor);
             socket.connect();
             socket.close(1000, 'normal close');
-            socket.instance.should.have.a.property('closed').that.equals(true);
-            socket.instance.should.have.a.property('closeCode').that.equals(1000);
-            socket.instance.should.have.a.property('closeMessage').that.equals('normal close');
+            socket.instance.socket.should.have.a.property('closed').that.equals(true);
+            socket.instance.socket.should.have.a.property('closeCode').that.equals(1000);
+            socket.instance.socket.should.have.a.property('closeMessage').that.equals('normal close');
         });
     });
 
@@ -396,8 +396,8 @@ describe('Retry Socket', () => {
             const socket = constructSocket(util.mockNodeWebSocketConstructor);
             socket.connect();
             socket.send('some message');
-            socket.instance.should.have.a.property('lastSentMessage').that.equals('');
-            socket.instance.should.have.a.property('messagesSent').that.equals(0);
+            socket.instance.socket.should.have.a.property('lastSentMessage').that.equals('');
+            socket.instance.socket.should.have.a.property('messagesSent').that.equals(0);
         });
 
         it('Queues messages while connecting when queueing is enabled', () => {
@@ -419,8 +419,8 @@ describe('Retry Socket', () => {
             socket.connect();
             socket.connecting = false;
             socket.send('some message');
-            socket.instance.should.have.a.property('messagesSent').that.equals(1);
-            socket.instance.should.have.a.property('lastSentMessage').that.equals('some message');
+            socket.instance.socket.should.have.a.property('messagesSent').that.equals(1);
+            socket.instance.socket.should.have.a.property('lastSentMessage').that.equals('some message');
         });
     });
 });

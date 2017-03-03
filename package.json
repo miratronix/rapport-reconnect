@@ -30,7 +30,7 @@
     "mocha-junit-reporter": "^1.13.0",
     "post-commit": "0.0.1",
     "pre-commit": "^1.2.2",
-    "rapport": "0.0.10",
+    "rapport": "0.0.13",
     "uglify-js": "^2.7.5"
   },
   "peerDependencies": {
