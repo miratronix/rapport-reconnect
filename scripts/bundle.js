@@ -13,6 +13,7 @@ const uglify = () => {
 };
 
 return browserify('./lib/index.js')
+    .transform('browserify-shim')
     .transform('babelify', { presets: ['es2015'] })
     .bundle()
     .pipe(uglify())
