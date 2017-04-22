@@ -204,6 +204,53 @@ describe('Retry Socket', () => {
                 socket.successfullyConnected();
             });
         });
+
+        it('Calls the open handler with an object parameter', () => {
+            const socket = constructSocket(util.mockNodeWebSocketConstructor);
+            return new Promise((resolve) => {
+                socket.on('open', (openData) => {
+                    openData.should.have.a.property('openCount').that.equals(1);
+                    openData.should.have.a.property('closeCount').that.equals(0);
+                    openData.should.have.a.property('reconnect').that.equals(false);
+                    openData.should.have.a.property('retryAttempts').that.equals(0);
+                    resolve();
+                });
+                socket.successfullyConnected();
+            });
+        });
+
+        it('Increments the open count when the connection is reopened', () => {
+            const socket = constructSocket(util.mockNodeWebSocketConstructor);
+            return new Promise((resolve) => {
+                socket.successfullyConnected();
+                socket.on('open', (openData) => {
+                    openData.should.have.a.property('openCount').that.equals(2);
+                    openData.should.have.a.property('closeCount').that.equals(0);
+                    openData.should.have.a.property('reconnect').that.equals(true);
+                    openData.should.have.a.property('retryAttempts').that.equals(0);
+                    resolve();
+                });
+                socket.successfullyConnected();
+            });
+        });
+
+        it('Calls the open handler with the number of retry attempts made', () => {
+            const socket = constructSocket(util.mockNodeWebSocketConstructor);
+
+            socket.setRetryer({
+                attempts: 100,
+                cancel: () => {},
+                reset: () => {}
+            });
+
+            return new Promise((resolve) => {
+                socket.on('open', (openData) => {
+                    openData.should.have.a.property('retryAttempts').that.equals(100);
+                    resolve();
+                });
+                socket.successfullyConnected();
+            });
+        });
     });
 
     context('abort()', () => {
@@ -308,6 +355,78 @@ describe('Retry Socket', () => {
                     resolve();
                 };
                 socket.reconnect(1006, 'abnormal close');
+            });
+        });
+
+        it('Calls the error handler with a RapportReconnect error object', () => {
+            const socket = constructSocket(util.mockNodeWebSocketConstructor);
+            socket.setRetryer({
+                attempt: (attempt, abort) => {
+                    abort();
+                }
+            });
+
+            return new Promise((resolve) => {
+                socket.on('error', (err) => {
+                    err.should.have.a.property('name').that.equals('RapportReconnect');
+                    err.should.have.a.property('code').that.equals(1006);
+                    err.should.have.a.property('message').that.equals('abnormal close');
+                    err.should.have.a.property('closeCount').that.equals(1);
+                    err.should.have.a.property('openCount').that.equals(0);
+                    resolve();
+                });
+                socket.reconnect(1006, 'abnormal close');
+            });
+        });
+
+        it('Increments the close count when the connection is dropped', () => {
+            const socket = constructSocket(util.mockNodeWebSocketConstructor);
+            socket.setRetryer({
+                attempt: (attempt, abort) => {}
+            });
+
+            return new Promise((resolve) => {
+                socket.reconnect(1006, 'abnormal close');
+                socket.on('error', (err) => {
+                    err.should.have.a.property('closeCount').that.equals(2);
+                    resolve();
+                });
+                socket.reconnect(1006, 'abnormal close');
+            });
+        });
+
+        it('Calls the error handler with the number of attempts that were made', () => {
+            const socket = constructSocket(util.mockNodeWebSocketConstructor);
+            socket.setRetryer({
+                attempts: 42,
+                attempt: (attempt, abort) => {}
+            });
+
+            return new Promise((resolve) => {
+                socket.on('error', (err) => {
+                    err.should.have.a.property('retryAttempts').that.equals(42);
+                    resolve();
+                });
+                socket.reconnect(1006, 'abnormal close');
+            });
+        });
+
+        it('Doesn\'t reconnect if the error handler closes the socket', () => {
+            const socket = constructSocket(util.mockNodeWebSocketConstructor);
+
+            socket.on('error', () => {
+                socket.close();
+            });
+
+            return new Promise((resolve, reject) => {
+                socket.setRetryer({
+                    cancel: () => {},
+                    reset: () => {},
+                    attempt: reject
+                });
+
+                socket.reconnect(1006, 'abnormal close');
+                resolve();
             });
         });
     });
