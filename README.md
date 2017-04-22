@@ -35,6 +35,37 @@ rapport.create('ws://hello.world', { reconnect: true });
 *NOTE*: Only sockets that are created with `.create()` can have reconnect functionality. Specifying a reconnect value for a 
 socket that is wrapped with `.wrap()` will do nothing.
 
+## Open and Error Handlers
+When this plugin is added to Rapport, the `onOpen` handler will be called every time a new connection is established, with an object parameter:
+```javascript
+const ws = rapport.create('ws://hello.world', { reconnect: true });
+
+ws.onOpen((openData) => {
+     console.log(`Successfully established connection after ${openData.retryAttempts} reconnect attempts`);
+     console.log(`Total number of socket opens: ${openData.openCount}`);
+     console.log(`Total number of socket closes: ${openData.closeCount}`);
+     
+     if (openData.reconnect) {
+         console.log('Socket has been reconnected');
+     } else {
+         console.log('Socket has been opened for the first time');
+     }
+});
+```
+Additionally, every time the connection is dropped, the `onError` handler will be called:
+```javascript
+const ws = rapport.create('ws://hello.world', { reconnect: true });
+
+ws.onError((err) => {
+    if (err.name === 'RapportReconnect') {
+        console.log(`Socket was closed with a code of ${err.code} and message of ${err.message}`);
+        console.log(`Attempting connection again after ${err.retryAttempts} attempts`);
+        console.log(`Total number of socket closes: ${err.closeCount}`);
+        console.log(`Total number of socket opens: ${err.openCount}`);
+    }
+});
+```
+
 ## Reconnect Options
 By default, reconnection will be attempted on an interval of 500 milliseconds, with no stop condition. All of the following 
 calls are equivalent:
