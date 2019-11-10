@@ -1,6 +1,6 @@
 {
   "name": "rapport-reconnect",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Reconnect plugin for the Rapport request/response library",
   "main": "lib/index.js",
   "scripts": {
