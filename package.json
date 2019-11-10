@@ -1,6 +1,6 @@
 {
   "name": "rapport-reconnect",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Reconnect plugin for the Rapport request/response library",
   "main": "lib/index.js",
   "scripts": {
@@ -31,11 +31,11 @@
     "mocha-junit-reporter": "^1.13.0",
     "post-commit": "0.0.1",
     "pre-commit": "^1.2.2",
-    "rapport": "0.0.14",
+    "rapport": "0.1.5",
     "uglify-js": "^2.7.5"
   },
   "peerDependencies": {
-    "rapport": ">=0.0.14"
+    "rapport": ">=0.1.5"
   },
   "browserify-shim": {
     "rapport": "global:Rapport"

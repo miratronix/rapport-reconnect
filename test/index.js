@@ -53,7 +53,7 @@ const TestUtil = {
                 ws.handlers[type].push(handler);
             },
 
-            removeAllListeners: () => {}
+            removeEventListener: () => {}
         };
 
         return ws;
